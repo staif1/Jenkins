@@ -14,6 +14,22 @@ sudo apt-get update
 sudo apt-get install jenkins
 
 http://your_server_ip:8080 - переходим в браузер
+
+cat /var/lib/jenkins/secrets/initialAdminPassword - копируем пароль и вставляем в админке jenkins
+
+install suggested plugins - выбираем в вэб-интерфейсе
+
+Skip and continue as admin - в правом нижем углу будет кнопка
+
 +---------------------------------------------------------------------------------------+
 
 
+
+
+
+
++------------------------изменения пароля в админку jenkins-----------------------------+
+
++------------в вэб-интерфейсе-----------+
+People -> admin -> configure -> Password
++---------------------------------------+
