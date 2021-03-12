@@ -65,6 +65,106 @@ creat job -> Enter an item name(Вводим имя проекта) выбира
 пишем команду ssh root@192.168.255.170 'hostname'
 
 Buikd now - запускаем сборку 
++-------------------------------------------------------------------------------------------------------------------+
 
 
 
+
+
+
+
+
+
++---------------------------------------------ДЕЛАЕМ ПЕРВЫЙ PIPE JENKINS---------------------------------------------------+
+
++-----переходим на сервер jenkins-------+
+sudo -i 
+
++--------sudo nano /etc/hosts-----------+
+127.0.0.1 localhost
+127.0.1.1 jenkins
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+#DNS
+192.168.255.170 ub1 <--- прописываем DNS 
+
++-----------------------------------------------------+
+
+su - jenkins - переходим в пользователя jenkins
+
+ssh root@ub1 - подключаемся по DNS имени на нашу машину клиентскую
+
+
+
+
+
+
+
++--------------переходим графический интерфейс---------------+
+
+http://your_server_ip:8080 - переходим в браузер
+
+creat job -> Enter an item name(Вводим имя проекта) выбираем -> frestyle project 
+поподаем в меняю -> находим там Build(сборка) -> execute shell
+пишем команду ssh root@ub1 'hostname'  <------- проверяем job по dns имени
+
+Buikd now - запускаем сборку 
+
+
+
+
+
++---------------------переходим в VS studio----------------------------+
+цепляемся к гиту нашему 
+
+изменяем наш файл groovy 
+
+нажимаем ctrl+s 
+
+переходим в GitKraken 
+
+в правом углу нажимаем view changes
+
+
+
+
++-----------------создаем новое задание-------------------+
+Копируем ссылку на наш репозиторий где лежит на pipe
+
+new item -> Enter an item name(Вводим имя проекта) выбираем -> Pipeline
+
+
+Находим там ветку Pipline
+
+Definition
+   выбираем Pipline script from SCM
+ 
+ SCM
+   git
+   
+Repository url
+    https://github.com/staif1/project_template.git
+
+Branches to build
+     */main
+     
+ Script Path   <--- путь до файлы 
+      jenkinsfiles/first_steps.jenkins
+      
+
+Save
+
+
+Build now
+
+
+
+
+
++----------------------------
