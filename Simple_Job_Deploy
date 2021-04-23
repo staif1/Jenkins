@@ -1,0 +1,103 @@
++------------------------------------Простейший Jobs включая Deployment--------------------------------+
+
+
+echo "-----------------------------Build Started-------------------------------"
+cat <<EOF> index.html
+<html>
+<body color=black>
+<center>
+<h2><font color=yellow>Hello from Nikita-IT</font></h2>
+
+<font color=green>www.nikita-it.net</font>
+
+</center>
+</body>
+</html>
+EOF
+echo "-----------------------------Build Finished-------------------------------"
+
+
+
+
+
+echo "-----------------------------Test Started-------------------------------"
+result=`grep "Hello" index.html | wc -l`
+echo $result
+if [ "$result" = "1" ]
+then
+     echo "Test Passed"
+else
+     echo "Test Failed"
+fi
+echo "-----------------------------Test Finished-------------------------------"
+
+
+
+
+
+
++------------------------sudo nano /etc/ssh/sshd_config--------НА КЛИЕНТЕ-----------------------+
+надо uncomment:
+PermitRootLogin yes
+PasswordAuthentication yes
+sudo service ssh restart
++-------------------------------------------------------------------------------------+
+
+
+
+
++------------------Установка палагина Public Over SSH---------------------------+
+Manage Jenkins -> Manage Plugins -> вкладка Availave 
+в поиске пишем Public Over SSH и скачиваем его
++-------------------------------------------------------------------------------+
+
+
+
+
++----------------------------Добавление Удаленного Сервера для Deploy в Jenkins-----------------------------------+
+Mange Jenkins-> Configure System -> назодим раздел Publish over SSH -> в разделе Key
+вставляем наш id_rsa ключ
+
+нажимаем кнопку Add
+
+и прописываем: название сервера, Hostname, Username, Remote Directory
++-----------------------------------------------------------------------------------------------------------------+
+
+
+
+
++-----------------------------------------копирование---SSH-KEY---------------------------------------------------+
+| на сервере JENKINS!!!!											                                                                    |
+|														                                                                                      |
+| sudo -i													                                                                                |
+|  														                                                                                    |
+| su - jenkins													                                                                          |
+|													                                                                                        |
+| ssh-keygen -t rsa -b 4096 -m PEM - создание ssh ключа 					                                                |
+|								  				                                                                                        |
+| ssh-copy-id -i /var/lib/jenkins/.ssh/id_rsa root@192.168.255.170  - копирование ключа на удаленный север        |
+|												                                                                                          |
+|  Копируем ключ !!!! 						                                                                                |
+| 										                                                                                            |
+|  в Jenkins интерфейсе вставляем данный ключ rsa!!! в палагине Publish over SSH в разделе Key                    |
++-----------------------------------------------------------------------------------------------------------------+
+
+
+
+
+
+
+переходим в настройки нашего Jobа 
++------В разделе Post-buils Actions------+
+| выбираем: Send build artifats over SSH |
++----------------------------------------+
+
+Send build artifacts over SSH
+    SSH Server
+         NAME - там выйдет наш сервер который мы натсроили 
+
+          Transfer Set:
+             Sourece file - ставми *  <-- все файлы
+           Exec command:
+              sudo service apache2 restart  <-- в этой строке пишем команду  
+            
