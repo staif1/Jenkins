@@ -4,7 +4,7 @@
 echo "-----------------------------Build Started-------------------------------"
 cat <<EOF> index.html
 <html>
-<body color=black>
+<body bgcolor=black>
 <center>
 <h2><font color=yellow>Hello from Nikita-IT</font></h2>
 
