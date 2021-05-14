@@ -1,0 +1,222 @@
++-----------------на сервере Jenkins----------------+
+pulagins:
+Public Over SSH
+GitHub Integration
+Green Bals
++---------------------------------------------------+
+
+
+
+
++------------------------sudo nano /etc/ssh/sshd_config--------НА КЛИЕНТЕ-----------------------+
+sudo apt-get install apache2 
+
+sudo passwd - создание админа
+
+надо uncomment:
+PermitRootLogin yes
+PasswordAuthentication yes
+sudo service ssh restart
++-------------------------------------------------------------------------------------+
+
+
+
+
+
+
+
++------------------------------НА-СЕРВЕРЕ-JENKINS------копирование---SSH-KEY--------------------------------------+
+| на сервере JENKINS!!!!											  |
+|														  |
+| sudo -i													  |
+|  														  |
+| su - jenkins													  |
+|													          |
+| ssh-keygen -t rsa -b 4096 -m PEM - создание ssh ключа 					                  |
+|								  				                  |
+| ssh-copy-id -i /var/lib/jenkins/.ssh/id_rsa root@192.168.255.170  - копирование ключа на удаленный север        |
+|												                  |
+|  jenkins@jenkins Копируем ключ от пользователя jenkins !!!! 						                                                  |
+| 										                                  |
+|  в Jenkins интерфейсе вставляем данный ключ rsa!!! в палагине Publish over SSH в разделе Key                    |
++-----------------------------------------------------------------------------------------------------------------+
+
+
+
+
+
+
+
+
+
++----------------------------Добавление Удаленного Сервера для Deploy в Jenkins-----------------------------------+
+Mange Jenkins-> Configure System -> назодим раздел Publish over SSH -> в разделе Key
+вставляем наш id_rsa ключ !!который мы копировали на клиент!!
+
+нажимаем кнопку Add
+
+и прописываем: название сервера, Hostname, Username, Remote Directory
+
+нажимаем Test Configure 
+если все хорошо покажет SUCCESS
++-----------------------------------------------------------------------------------------------------------------+
+
+
+
+
+
+
+
+
+
++-----------------------------------------Создаем Job--Тестовый-Проверка-Коннекта-------------------------------+
+
+в разделе Build: 
+выбираем Execute Shell
+
+
+echo "-----------------------------Build Started-------------------------------"
+cat <<EOF> index.html
+<html>
+<body bgcolor=black>
+<center>
+<h2><font color=yellow>Hello from Nikita-IT</font></h2>
+
+<font color=green>www.nikita-it.net</font>
+
+</center>
+</body>
+</html>
+EOF
+echo "-----------------------------Build Finished-------------------------------"
+
+
+
+echo "-----------------------------Test Started-------------------------------"
+result=`grep "Hello" index.html | wc -l`
+echo $result
+if [ "$result" = "1" ]
+then
+     echo "Test Passed"
+else
+     echo "Test Failed"
+fi
+echo "-----------------------------Test Finished-------------------------------"
+
+
+
+
+
+
+
+
+
+
++----------------------переходим в настройки нашего Jobа добаялем сервер----------------------+
+
++------В разделе Post-buils Actions------+
+| выбираем: Send build artifats over SSH |
++----------------------------------------+
+
+Send build artifacts over SSH
+    SSH Server
+         NAME - там выйдет наш сервер который мы натсроили 
+
+          Transfer Set:
+             Sourece file - ставми *  <-- все файлы
+           Exec command:
+              sudo service apache2 restart  <-- в этой строке пишем команду  
+            
++--------------------------------------------------------------------------------------------+
+
+
+
+
+
+
+
+
+
+
++-----на машине с Виндой (Разработчика!!!)---------+ 
+Запускаем Git Bush Here
+
+ssh-keygen
+
+копируем ssh key который паблик id_rsa.pub и вставляем его в GitHub -> user -> settings -> SSH and GPG Key
+
+git clone ссылка_SSH_репозитория  - копируем репозиторий на машину РАЗРАБОТЧИКА!!!
+
+ 
+
++---------------------настройка jenkins с GitHub-------------------+
+в нашем Job в разделе Source Code Management чек бокс ставим -> Git
+
+добавялем Repository URL 
+
+
++---переходим в наш job -> где Repository URL с права Add----+
+Kind
+  SSH Username with private key
+
+ID
+ ssh-github (напрнимер ,можно другое название)
+
+Description
+  ssh-github (напрнимер ,можно другое название)
+
+Username
+  название репозитрия(Разработчика)!!!
+
+Private Key
+    вставляем ключ id_rsa (приватный c пк разарботчика)
+
++------------------------------------------------------------------+
+
+в разделе Branches to build
+*/master  - Ветка master!!!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++--------------------Автоматизация запуска Build из GitHub - Jenkins trigger from GitHub, Jenkins webhook----------------------+
+
+для этого нужно установить палагин: GitHub Integration
+
+переходим в наш Job
+GitHub project - указываем ssh url нашего репозитория 
+в разделе Build Triggers должен появится чек бокс GitHub hook trigger for GITScm polling отмечаем его 
+
+
+
+надо чтобы ip адресс был общедоступным(белым)
+
+
++--после надо в GitHub натсроить WebHook(на машине РАЗРАБОТЧКИА)--+
+идем в github -> в раздле нашего проекта(репозитория) settings -> WebHooks -> нажимаем Add webhook
+
+Payload URL - вставляем ip-адресс jenkins вместе с портом http://белый-ip:8080/github-webhook/
+
+Content type - выбрать application/json
+
+
+
+
+
+
+
+
+
+
+
