@@ -1,0 +1,80 @@
++-----------------------------на сервере Jenkins---------------------------------+
+instal plugin: Node js
+
+Dashboard -> Global Tool Configuration -> раздел NodeJs
+Name: NodeJs (например)
+Version: NodeJs 14.10.0   <--- Важно !!!!
+
+идем в наш Job 
+Build Enviroment: Provide Node & npm bin /folder to PATH  <-- ставим чекс бокс 
+
+
++-----------в конфигурации job----------------------+
+в раздел Build:
+  Execute Shell:
+
+npm install
+npm test
+npm run build
+
+tar czf Node.tar.gz и наименования файлов и папок проекта в гите   
+
+tar czf Node.tar.gz node_modules index.js package.json public app.json - например вот так 
+
+
+
+
+
++--------------на клиетен----------------------------+
+docker установить 
+
+sudo chmod 777 /var/run/docker.sock - пермишинс
+
++-------создать Dockerfile на клиенте-----------+
+FROM node:latest
+
+MAINTAINER Nikita DevOps
+
+RUN echo "Tryin to build my first application"
+
+COPY . /var/www
+
+WORKDIR /var/www
+
+RUN npm install
+
+RUN npm build
+
+EXPOSE 3000
+
+ENTRYPOINT ["npm","start"]
++----------------------------------------------+
+
+
+
+
+
+
++-------------------------------Send build artifacts over SSH---------------------------------+
+
++----Source files-----------+
+**/*.gz 
+
+
++----Remote directory:------+
+
+
+
++--------Exec command:------+
+cd /home/nikita/
+tar -xf Node.tar.gz ;
+docker rmi nodeimage;
+docker stop nodecontainer;
+docker rm nodecontainer;
+docker build -t nodeimage .;
+docker run -d --name nodecontainer -p 3000:3000 nodeimage;
++----------------------------------------------------------------------------------------------+
+
+
+
+
