@@ -2,15 +2,16 @@
 pulagins:
 Public Over SSH
 GitHub Integration
-Green Bals
+Green Balls
+SSH plugin
+SSH Agent Plugin
+SSH Build Agents plugin
 +---------------------------------------------------+
 
 
 
 
 +------------------------sudo nano /etc/ssh/sshd_config--------НА КЛИЕНТЕ-----------------------+
-sudo apt-get install apache2 
-
 sudo passwd - создание админа
 
 надо uncomment:
@@ -26,19 +27,21 @@ sudo service ssh restart
 
 
 +------------------------------НА-СЕРВЕРЕ-JENKINS------копирование---SSH-KEY--------------------------------------+
-| на сервере JENKINS!!!!											  |
-|														  |
-| sudo -i													  |
-|  														  |
-| su - jenkins													  |
-|													          |
-| ssh-keygen -t rsa -b 4096 -m PEM - создание ssh ключа 					                  |
-|								  				                  |
-| ssh-copy-id -i /var/lib/jenkins/.ssh/id_rsa root@192.168.255.170  - копирование ключа на удаленный север        |
-|												                  |
-|  jenkins@jenkins Копируем ключ от пользователя jenkins !!!! 						                                                  |
-| 										                                  |
-|  в Jenkins интерфейсе вставляем данный ключ rsa!!! в палагине Publish over SSH в разделе Key                    |
+ на сервере JENKINS!!!!											
+ 
+ sudo -i													  
+  														  
+ su - jenkins													  
+													          
+ ssh-keygen -t rsa -b 4096 -m PEM - создание ssh ключа 					                  
+								  				                  
+ ssh-copy-id -i /var/lib/jenkins/.ssh/id_rsa root@192.168.255.170  - копирование ключа на удаленный север        
+                                                                                                                 
+ cat /var/lib/jenkins/.ssh/id_rsa  - показать ключ                                                               
+												                  
+  jenkins@jenkins Копируем ключ от пользователя jenkins !!!! 						                                                
+ 										                                  
+  в Jenkins интерфейсе вставляем данный ключ rsa!!! в палагине Publish over SSH в разделе Key                    
 +-----------------------------------------------------------------------------------------------------------------+
 
 
@@ -55,7 +58,10 @@ Mange Jenkins-> Configure System -> назодим раздел Publish over SSH
 
 нажимаем кнопку Add
 
-и прописываем: название сервера, Hostname, Username, Remote Directory
+и прописываем: название сервера, 
+Hostname - ip-адерес удаленного сервера
+Username - на какого пользователя мы копирывали ключ (root) 
+Remote Directory - путь до папки /var/www/html
 
 нажимаем Test Configure 
 если все хорошо покажет SUCCESS
